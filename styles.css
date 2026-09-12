@@ -619,6 +619,28 @@ section[id] { scroll-margin-top: 92px; }
 .ach h3 { font-size: 1.02rem; margin-bottom: 8px; }
 .ach p { font-size: .88rem; color: var(--muted); margin: 0; }
 
+/* 可点击跳转的成就卡片（链到 GitHub 仓库） */
+.ach--link { display: block; }
+.ach--link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ach__go {
+  position: absolute;
+  top: 18px; right: 18px;
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  color: var(--muted);
+  background: var(--glass-2);
+  border: 1px solid var(--line);
+  transition: transform .45s var(--ease), color .45s var(--ease), border-color .45s var(--ease);
+}
+.ach__go .icon { width: 15px; height: 15px; }
+.ach--link:hover .ach__go {
+  transform: translate(2px, -2px);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
 /* ---------- 12. 时间轴 ---------- */
 .timeline { position: relative; padding-left: 44px; }
 .timeline__rail {

@@ -43,6 +43,10 @@
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4.2M12 16.8V21M3 12h4.2M16.8 12H21M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></symbol>
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 1 0-5.7-5.7l-1 1"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 1 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7.5 9.5 2.5 2.5-2.5 2.5"/><path d="M12.5 14.5h4"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M8 2v20"/><path d="M11.5 7.5h5M11.5 11.5h5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20.5 5 16l9.7-9.7a2.1 2.1 0 0 1 3 3L8 19l-4 1.5Z"/><path d="m13.5 7.5 3 3"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M7.5 16.5 16.5 7.5"/><path d="M9.5 7.5h7v7"/></symbol>
 </svg>
 
 <!-- ===== 背景：渐变光斑 + 网格 ===== -->
@@ -106,6 +110,8 @@
         <li class="chip">Java</li>
         <li class="chip">Python · 2 年</li>
         <li class="chip chip--hot">C · 正在深入</li>
+        <li class="chip">Neovim</li>
+        <li class="chip">笔记全开源</li>
         <li class="chip">数学 141</li>
       </ul>
     </div>
@@ -172,6 +178,10 @@
           现在我把主要精力放在 <b>C</b> 上：手动管理内存、盯着指针、读编译与链接的错误信息。
           过程慢一些，但能把「程序到底发生了什么」看得更清楚——这也是我走向 CPython 的必经之路。
         </p>
+        <p>
+          日常开发都在 <b>Neovim</b> 里完成，配置公开在自己的仓库；笔记也是同样的习惯——
+          大学课程笔记全部开源，高中数学笔记还整理了一份 <b>Typst</b> 排版版本。
+        </p>
       </article>
 
       <div class="about__side">
@@ -224,6 +234,28 @@
         <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-chip"></use></svg></div>
         <h3>Java 起步，转向 C</h3>
         <p>从 Java 的面向对象启蒙，到主动走向 C 的内存与指针——一条不断向下的路。</p>
+      </article>
+
+      <a class="glass card ach ach--link reveal" data-delay="400"
+         href="https://github.com/PolarBear-tech/my-nvim-config" target="_blank" rel="noopener">
+        <span class="ach__go" aria-hidden="true"><svg class="icon"><use href="#i-ext"></use></svg></span>
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-term"></use></svg></div>
+        <h3>使用 Neovim 开发</h3>
+        <p>写代码、写笔记都在终端里完成，自己的 Neovim 配置也开源在 GitHub 上。</p>
+      </a>
+
+      <a class="glass card ach ach--link reveal" data-delay="500"
+         href="https://github.com/PolarBear-tech/my-note" target="_blank" rel="noopener">
+        <span class="ach__go" aria-hidden="true"><svg class="icon"><use href="#i-ext"></use></svg></span>
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg></div>
+        <h3>大学笔记全部开源</h3>
+        <p>从入学起的课程笔记持续整理并公开，边学边写，欢迎取用与交流。</p>
+      </a>
+
+      <article class="glass card ach reveal" data-delay="600">
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-pen"></use></svg></div>
+        <h3>高中数学笔记 · Typst 版本</h3>
+        <p>用 Typst 重新排版的整套高中数学笔记，公式排版干净，源码一并开源。</p>
       </article>
     </div>
   </section>
