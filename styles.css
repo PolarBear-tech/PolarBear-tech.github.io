@@ -499,9 +499,10 @@ section[id] { scroll-margin-top: 92px; }
 
 .hero__hint { font-size: .78rem; color: var(--muted); opacity: .7; }
 
-/* 首屏顶部的插画头像（渐变光环） */
+/* 首屏标题上方的头像（渐变光环） */
 .hero__avatar {
   width: 104px; height: 104px;
+  margin-bottom: 22px;
   padding: 3px;
   border-radius: 50%;
   background: linear-gradient(140deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
