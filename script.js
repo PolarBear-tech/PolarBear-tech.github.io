@@ -45,7 +45,8 @@ const PROFILE = {
     $$('[data-bind="mono"]').forEach((el) => (el.textContent = PROFILE.mono));
     $$('[data-bind="school"]').forEach((el) => (el.textContent = PROFILE.school));
     $$('[data-bind="status"]').forEach((el) => (el.textContent = PROFILE.status));
-    document.title = `${PROFILE.name} · ${PROFILE.school}`;
+    // 浏览器标签页标题（不含学校名）
+    document.title = `${PROFILE.name} · 个人主页`;
 
     const box = $('#footerLinks');
     if (box) {
