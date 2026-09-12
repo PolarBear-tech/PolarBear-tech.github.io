@@ -513,7 +513,7 @@ section[id] { scroll-margin-top: 92px; }
   width: 100%; height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  background: #fff;
+  object-position: 50% 30%;   /* 竖版照片按头部取景 */
 }
 
 /* ---------- 8. 数据条 ---------- */
@@ -597,7 +597,7 @@ section[id] { scroll-margin-top: 92px; }
   width: 100%; height: 100%;
   border-radius: inherit;
   object-fit: cover;
-  object-position: 50% 28%;   /* 证件照竖向构图，偏向头部取景 */
+  object-position: 50% 30%;   /* 竖版照片按头部取景；正方形图不受影响 */
 }
 @keyframes breathe {
   0%, 100% { transform: translateY(0) rotate(0deg); }
