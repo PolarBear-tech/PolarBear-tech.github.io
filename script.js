@@ -7,8 +7,8 @@
 const PROFILE = {
   // 你的名字（改动后页面所有位置会同步更新）
   name: '李金钊',
-  // 头像方块 / 导航左侧显示的字母
-  mono: 'S',
+  // 头像方块 / 导航左侧显示的字符（这里用姓氏，配中文名更自然）
+  mono: '李',
   school: '上海交通大学',
   status: '本科在读',
 
@@ -25,7 +25,10 @@ const PROFILE = {
   // 页脚链接，例如：
   // [{ label: 'GitHub', url: 'https://github.com/yourname' },
   //  { label: '邮箱',   url: 'mailto:you@example.com' }]
-  links: [{label: "邮箱", url: "li.jinzhao.x@outlook.com"}, {label: "Github", url:"https://github.com/PolarBear-tech"}]
+  links: [
+    { label: '邮箱', url: 'mailto:li.jinzhao.x@outlook.com' },
+    { label: 'Github', url: 'https://github.com/PolarBear-tech' }
+  ]
 };
 
 (() => {
