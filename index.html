@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人主页 · 上海交通大学</title>
+<meta name="description" content="上海交通大学本科在读，两年 Python 学习经验，从 Java 转向 C，长期目标是成为一名 CPython Contributor。">
+<meta name="theme-color" content="#070a12">
+
+<!-- 尽早确定主题，避免刷新时闪白 -->
+<script>
+  (function () {
+    document.documentElement.classList.add('js');
+    try {
+      var saved = localStorage.getItem('theme');
+      var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      document.documentElement.dataset.theme = saved || (prefersLight ? 'light' : 'dark');
+    } catch (e) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236ea8fe'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='url(%23g)'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ===== 图标库 ===== -->
+<svg class="svg-sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M12 3 2 8.2l10 5.2 10-5.2L12 3Z"/><path d="M5 10.6V16c0 1.7 3.1 3 7 3s7-1.3 7-3v-5.4"/><path d="M21.5 9v5"/></symbol>
+  <symbol id="i-sigma" viewBox="0 0 24 24"><path d="M17.5 4H7l6 8-6 8h10.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m9 8-4 4 4 4"/><path d="m15 8 4 4-4 4"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="7.5" y="7.5" width="9" height="9" rx="2"/><path d="M4 10h3.5M4 14h3.5M16.5 10H20M16.5 14H20M10 4v3.5M14 4v3.5M10 16.5V20M14 16.5V20"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13"/><path d="m12.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.8A8.7 8.7 0 0 1 9.2 3.5a8.7 8.7 0 1 0 11.3 11.3Z"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4.2M12 16.8V21M3 12h4.2M16.8 12H21M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 1 0-5.7-5.7l-1 1"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 1 0 5.7 5.7l1-1"/></symbol>
+</svg>
+
+<!-- ===== 背景：渐变光斑 + 网格 ===== -->
+<div class="bg" aria-hidden="true">
+  <span class="bg__blob bg__blob--1"></span>
+  <span class="bg__blob bg__blob--2"></span>
+  <span class="bg__blob bg__blob--3"></span>
+  <span class="bg__grid"></span>
+</div>
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<!-- 阅读进度 -->
+<div class="progress" aria-hidden="true"><span class="progress__bar" id="progressBar"></span></div>
+
+<!-- ===== 顶部玻璃导航 ===== -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#hero" aria-label="回到顶部">
+    <span class="nav__mono" data-bind="mono">S</span>
+    <span class="nav__name" data-bind="name">你的名字</span>
+  </a>
+  <nav class="nav__links" aria-label="页面导航">
+    <a class="nav__link" href="#about">关于</a>
+    <a class="nav__link" href="#achievements">成就</a>
+    <a class="nav__link" href="#journey">轨迹</a>
+    <a class="nav__link" href="#goals">目标</a>
+  </nav>
+  <button class="icon-btn" id="themeToggle" type="button" aria-label="切换深浅色主题" title="切换深浅色主题">
+    <svg class="icon icon--sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+    <svg class="icon icon--moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+  </button>
+</header>
+
+<main>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero wrap" id="hero">
+    <div class="hero__text">
+      <p class="badge reveal" data-delay="0">
+        <svg class="icon" aria-hidden="true"><use href="#i-cap"></use></svg>
+        <span data-bind="school">上海交通大学</span> · <span data-bind="status">本科在读</span>
+      </p>
+
+      <h1 class="hero__title reveal" data-delay="80">
+        你好，我是 <span class="grad" data-bind="name">你的名字</span>
+      </h1>
+
+      <p class="hero__lead reveal" data-delay="160">
+        从 <b>Java</b> 起步，用 <b>Python</b> 写了两年，如今沉到 <b>C</b> 的世界里。
+        我喜欢把抽象的问题拆到底层，也喜欢让代码像这篇页面一样——干净、顺畅、有呼吸感。
+      </p>
+
+      <div class="hero__actions reveal" data-delay="240">
+        <a class="btn btn--primary" href="#achievements">
+          看看我的成就
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+        </a>
+        <a class="btn btn--ghost" href="#goals">长期目标</a>
+      </div>
+
+      <ul class="chips reveal" data-delay="320">
+        <li class="chip">Java</li>
+        <li class="chip">Python · 2 年</li>
+        <li class="chip chip--hot">C · 正在深入</li>
+        <li class="chip">数学 141</li>
+      </ul>
+    </div>
+
+    <div class="hero__visual reveal" data-delay="200">
+      <div class="term glass card tilt" id="termCard">
+        <div class="term__bar">
+          <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+          <span class="term__title">~/journey — zsh</span>
+        </div>
+        <div class="term__body" id="termBody" aria-hidden="true"></div>
+      </div>
+      <p class="hero__hint">← 鼠标移过来看看</p>
+    </div>
+  </section>
+
+  <!-- ===== 数据条 ===== -->
+  <section class="wrap">
+    <div class="stats glass reveal" data-delay="120">
+      <div class="stat card">
+        <div class="stat__num"><span data-count="141">0</span></div>
+        <div class="stat__label">新高考一卷 · 数学（2026）</div>
+      </div>
+      <div class="stat card">
+        <div class="stat__num"><span data-count="2">0</span><small>年</small></div>
+        <div class="stat__label">Python 学习经验</div>
+      </div>
+      <div class="stat card">
+        <div class="stat__num"><span data-count="3">0</span><small>门</small></div>
+        <div class="stat__label">主力语言 Java / Python / C</div>
+      </div>
+      <div class="stat card">
+        <div class="stat__num"><span data-count="1">0</span><small>个</small></div>
+        <div class="stat__label">长期目标 · CPython Contributor</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 关于 ===== -->
+  <section class="wrap section" id="about">
+    <div class="section__head reveal reveal--blur">
+      <span class="eyebrow">About</span>
+      <h2 class="section__title">关于我</h2>
+    </div>
+
+    <div class="about">
+      <article class="glass card about__main reveal" data-delay="80">
+        <div class="about__head">
+          <div class="avatar" aria-hidden="true"><span data-bind="mono">S</span></div>
+          <div>
+            <h3 class="about__name" data-bind="name">你的名字</h3>
+            <p class="about__meta"><span data-bind="school">上海交通大学</span> · <span data-bind="status">本科在读</span></p>
+          </div>
+        </div>
+        <p>
+          我是上海交通大学的本科在读学生。码龄始于 <b>Java</b>：从类和对象开始理解程序是怎么被组织的，
+          也第一次意识到「类型」和「接口」是在替人省心。
+        </p>
+        <p>
+          之后有两年时间我几乎每天都写 <b>Python</b>——用脚本处理数据、把重复的事情自动化，
+          也因此习惯了先让想法跑起来，再谈优雅。
+        </p>
+        <p>
+          现在我把主要精力放在 <b>C</b> 上：手动管理内存、盯着指针、读编译与链接的错误信息。
+          过程慢一些，但能把「程序到底发生了什么」看得更清楚——这也是我走向 CPython 的必经之路。
+        </p>
+      </article>
+
+      <div class="about__side">
+        <article class="glass card mini reveal" data-delay="160">
+          <div class="mini__icon"><svg class="icon" aria-hidden="true"><use href="#i-code"></use></svg></div>
+          <h3>技术轨迹</h3>
+          <p>Java（起点）→ Python（两年深耕）→ C（当前主线）。语言是工具，理解才是目的。</p>
+        </article>
+        <article class="glass card mini reveal" data-delay="240">
+          <div class="mini__icon"><svg class="icon" aria-hidden="true"><use href="#i-sigma"></use></svg></div>
+          <h3>数理底子</h3>
+          <p>2026 年新高考一卷数学 141 分。喜欢推公式，也喜欢把算法的复杂度算清楚。</p>
+        </article>
+        <article class="glass card mini reveal" data-delay="320">
+          <div class="mini__icon"><svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg></div>
+          <h3>现在在做什么</h3>
+          <p>补 C 与系统基础，读 CPython 源码，尝试从文档和测试开始提第一个 PR。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 成就 ===== -->
+  <section class="wrap section" id="achievements">
+    <div class="section__head reveal reveal--blur">
+      <span class="eyebrow">Achievements</span>
+      <h2 class="section__title">可展示的成就</h2>
+    </div>
+
+    <div class="grid grid--4">
+      <article class="glass card ach reveal" data-delay="0">
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-cap"></use></svg></div>
+        <h3>上海交通大学 · 本科在读</h3>
+        <p>在国内顶尖的工科环境里学习，和一群同样对底层原理好奇的人在一起。</p>
+      </article>
+
+      <article class="glass card ach reveal" data-delay="100">
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-sigma"></use></svg></div>
+        <h3>新高考一卷数学 141</h3>
+        <p>2026 年高考，数学一卷 141 分——长期训练出来的推演能力与耐心。</p>
+      </article>
+
+      <article class="glass card ach reveal" data-delay="200">
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-code"></use></svg></div>
+        <h3>2 年 Python 学习经验</h3>
+        <p>持续两年的动手实践：自动化脚本、数据处理，以及把想法快速变成能跑的程序。</p>
+      </article>
+
+      <article class="glass card ach reveal" data-delay="300">
+        <div class="ach__icon"><svg class="icon" aria-hidden="true"><use href="#i-chip"></use></svg></div>
+        <h3>Java 起步，转向 C</h3>
+        <p>从 Java 的面向对象启蒙，到主动走向 C 的内存与指针——一条不断向下的路。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== 轨迹 ===== -->
+  <section class="wrap section" id="journey">
+    <div class="section__head reveal reveal--blur">
+      <span class="eyebrow">Journey</span>
+      <h2 class="section__title">我的编程轨迹</h2>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <span class="timeline__rail" aria-hidden="true"><i class="timeline__fill" id="timelineFill"></i></span>
+
+      <div class="tl reveal" data-delay="0">
+        <span class="tl__node" aria-hidden="true"></span>
+        <div class="glass card tl__card">
+          <span class="tl__tag">起点</span>
+          <h3>Java · 第一次让程序听我的</h3>
+          <p>从 <code>System.out.println</code> 开始，学类、继承、接口。是 Java 教会我「结构化地思考」，而不是把代码堆成一团。</p>
+        </div>
+      </div>
+
+      <div class="tl reveal" data-delay="120">
+        <span class="tl__node" aria-hidden="true"></span>
+        <div class="glass card tl__card">
+          <span class="tl__tag">两年</span>
+          <h3>Python · 把想法快速变成现实</h3>
+          <p>两年的持续使用，写脚本、处理数据、做自动化。体会到表达力本身就是效率，也养成了「先跑通、再打磨」的习惯。</p>
+        </div>
+      </div>
+
+      <div class="tl reveal" data-delay="240">
+        <span class="tl__node" aria-hidden="true"></span>
+        <div class="glass card tl__card">
+          <span class="tl__tag">现在</span>
+          <h3>C · 向下走，直到看见机器</h3>
+          <p>指针、内存布局、编译与链接。写 C 的每一步都在暴露我以为自己懂、其实没懂的地方——这正是我想要的。</p>
+        </div>
+      </div>
+
+      <div class="tl reveal" data-delay="360">
+        <span class="tl__node tl__node--goal" aria-hidden="true"></span>
+        <div class="glass card tl__card tl__card--goal">
+          <span class="tl__tag tl__tag--goal">目标</span>
+          <h3>CPython · 从使用者变成贡献者</h3>
+          <p>让 Python 解释器的那种优雅，有一天也有我写下的几行。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 长期目标 ===== -->
+  <section class="wrap section" id="goals">
+    <div class="section__head reveal reveal--blur">
+      <span class="eyebrow">Long-term Goal</span>
+      <h2 class="section__title">长期目标</h2>
+    </div>
+
+    <article class="goal glass card reveal">
+      <div class="goal__glow" aria-hidden="true"></div>
+      <div class="goal__icon"><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg></div>
+      <h3 class="goal__title">成为一名 <span class="grad">CPython Contributor</span></h3>
+      <p class="goal__desc">
+        不只是使用 Python，而是参与塑造它。这条路我给自己的走法是：先把 C 和系统基础打穿，
+        再读懂 CPython 的对象模型与解释器，最后从一个文档修正、一个测试补充开始，把名字写进贡献者名单。
+      </p>
+
+      <ol class="road">
+        <li class="road__step"><span class="road__no">01</span><b>打牢基础</b><span>C 语言、指针与内存、编译链接、调试工具</span></li>
+        <li class="road__step"><span class="road__no">02</span><b>读懂源码</b><span>对象模型、引用计数、GIL、字节码解释器</span></li>
+        <li class="road__step"><span class="road__no">03</span><b>开始贡献</b><span>文档修正、测试补充、good first issue</span></li>
+        <li class="road__step"><span class="road__no">04</span><b>持续提交</b><span>保持节奏，进入 CPython 贡献者名单</span></li>
+      </ol>
+    </article>
+  </section>
+
+</main>
+
+<footer class="footer wrap">
+  <div class="glass footer__inner">
+    <p class="footer__text">© <span id="year">2026</span> <span data-bind="name">你的名字</span> · 手写 HTML / CSS / JavaScript，无框架</p>
+    <div class="footer__links" id="footerLinks"></div>
+  </div>
+</footer>
+
+<button class="to-top glass" id="toTop" type="button" aria-label="回到顶部">
+  <svg class="icon" aria-hidden="true"><use href="#i-up"></use></svg>
+</button>
+
+<script src="script.js"></script>
+</body>
+</html>
