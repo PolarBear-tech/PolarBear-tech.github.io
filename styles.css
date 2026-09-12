@@ -641,6 +641,44 @@ section[id] { scroll-margin-top: 92px; }
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
+/* ---------- 11.5 双列卡片：荣誉 / 爱好 / 目标 ---------- */
+.duo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.goal + .duo { margin-top: 20px; }
+
+.tile {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 26px;
+}
+.tile__icon {
+  display: grid;
+  place-items: center;
+  width: 46px; height: 46px;
+  flex: none;
+  border-radius: 15px;
+  color: #fff;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--accent) 34%, transparent);
+  transition: transform .55s var(--ease);
+}
+.tile:hover .tile__icon { transform: translateY(-3px) rotate(-6deg) scale(1.05); }
+.tile__icon .icon { width: 22px; height: 22px; }
+.tile h3 { font-size: 1.02rem; }
+.tile p { margin: 5px 0 0; font-size: .86rem; color: var(--muted); }
+.tile__tag {
+  display: block;
+  margin-bottom: 3px;
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+
 /* ---------- 12. 时间轴 ---------- */
 .timeline { position: relative; padding-left: 44px; }
 .timeline__rail {
@@ -850,6 +888,7 @@ section[id] { scroll-margin-top: 92px; }
   .section { padding: 76px 0 16px; }
   .about__side { grid-template-columns: 1fr; }
   .grid--4 { grid-template-columns: 1fr; }
+  .duo { grid-template-columns: 1fr; }
   .road { grid-template-columns: 1fr; }
   .road__step::before { display: none; }
   .timeline { padding-left: 34px; }
