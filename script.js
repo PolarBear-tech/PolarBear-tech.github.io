@@ -12,14 +12,29 @@ const PROFILE = {
   school: '上海交通大学',
   status: '本科在读',
 
-  // 终端里循环播放的内容。cls: 'cmd' 是命令行（逐字打印），'out' 是输出，'err' 是报错
-  terminal: [
-    { cls: 'cmd', prompt: '$ ', text: "python -c \"print('hello, world')\"" },
-    { cls: 'out', text: 'hello, world' },
-    { cls: 'cmd', prompt: '$ ', text: 'gcc -O2 -Wall main.c -o life' },
-    { cls: 'cmd', prompt: '$ ', text: './life' },
-    { cls: 'err', text: 'segmentation fault (core dumped)   # Working' },
-    { cls: 'cmd', prompt: '$ ', text: '# 目标：成为 CPython Contributor' }
+  // 可交互终端的开场白。{name} / {status} / {school} 会自动替换成上面的资料
+  terminalBanner: [
+    '{name}@sjtu · session ready',
+    '{status} / {school} · 数学 141',
+    '输入 help 查看可用指令，Tab 补全，↑ ↓ 翻历史。'
+  ],
+
+  // 终端指令表：cmd 是指令名，desc 会出现在 help 列表里
+  // go  = 执行后滚动到的区块 id（#about / #goals …）
+  // out = 打印出来的说明文字，可以留空
+  terminalCommands: [
+    { cmd: 'help',    desc: '列出所有可用指令' },
+    { cmd: 'about',   desc: '定位到「关于我」',       go: '#about',        out: '本科在读，数学 141，Python 两年，正在向 CPython Contributor 靠近。' },
+    { cmd: 'works',   desc: '定位到「可展示的成就」', go: '#achievements', out: '竞赛、开源配置、笔记库与数学仓库都在这里。' },
+    { cmd: 'honors',  desc: '定位到「荣誉」',         go: '#honors' },
+    { cmd: 'journey', desc: '定位到「编程轨迹」',     go: '#journey',      out: '从 hello, world 到操作系统与编译原理的时间线。' },
+    { cmd: 'life',    desc: '定位到「现在的爱好」',   go: '#interests' },
+    { cmd: 'goals',   desc: '定位到「长期目标」',     go: '#goals' },
+    { cmd: 'whoami',  desc: '打印身份信息',           out: '{name} · {status} @ {school}' },
+    { cmd: 'contact', desc: '打印邮箱与 GitHub' },
+    { cmd: 'top',     desc: '回到页面顶部',           go: '#hero' },
+    { cmd: 'clear',   desc: '清空终端输出' },
+    { cmd: 'exit',    desc: '假装退出登录',           out: '这里没有出口，只有更多笔记。' }
   ],
 
   // 页脚链接，例如：
@@ -36,7 +51,6 @@ const PROFILE = {
 
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- 1. 把 PROFILE 里的文字写进页面 ---------- */
@@ -248,6 +262,11 @@ const PROFILE = {
     if (!card || reduceMotion || !window.matchMedia('(hover: hover)').matches) return;
 
     card.addEventListener('pointermove', (e) => {
+      // 正在终端里打字时保持水平，免得文字跟着鼠标晃
+      if (card.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') {
+        card.style.transform = '';
+        return;
+      }
       const r = card.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width - 0.5;
       const py = (e.clientY - r.top) / r.height - 0.5;
@@ -257,69 +276,170 @@ const PROFILE = {
     card.addEventListener('pointerleave', () => { card.style.transform = ''; });
   }
 
-  /* ---------- 10. 终端打字机 ---------- */
+  /* ---------- 10. 可交互终端 ---------- */
   function initTerminal() {
-    const body = $('#termBody');
-    if (!body) return;
+    const card  = $('#termCard');
+    const body  = $('#termBody');
+    const form  = $('#termForm');
+    const field = $('#termInput');
+    if (!body || !form || !field) return;
 
-    const staticRender = () => {
-      body.innerHTML = '';
-      PROFILE.terminal.forEach((line) => {
-        const el = document.createElement('div');
-        el.className = `term__line ${line.cls || 'out'}`;
-        el.textContent = (line.prompt || '') + line.text;
-        body.appendChild(el);
+    const PROMPT  = '$';
+    const cmds    = PROFILE.terminalCommands || [];
+    const find    = (name) => cmds.find((c) => c.cmd === name);
+    const fill    = (s) => s.replace(/\{(\w+)\}/g, (m, k) => (PROFILE[k] != null ? PROFILE[k] : m));
+    const history = [];
+    let hIndex = -1;
+
+    const scrollEnd = () => { body.scrollTop = body.scrollHeight; };
+
+    // 往输出区追加一行；cls 可为空 / 'out' / 'err' / 'cmd'
+    const push = (cls, text) => {
+      const el = document.createElement('div');
+      el.className = `term__line${cls ? ' ' + cls : ''}`;
+      el.textContent = text;
+      body.appendChild(el);
+      scrollEnd();
+      return el;
+    };
+
+    // 命令回显：$ xxx
+    const echo = (text) => {
+      const el = push('cmd', '');
+      const p = document.createElement('span');
+      p.className = 'term__prompt';
+      p.textContent = PROMPT;
+      el.appendChild(p);
+      el.append(document.createTextNode(text));
+      scrollEnd();
+    };
+
+    const clearLog = () => { body.textContent = ''; };
+
+    const goTo = (sel) => {
+      const target = sel && document.querySelector(sel);
+      if (!target) return false;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      return true;
+    };
+
+    // help：两列对齐的指令列表
+    const printHelp = () => {
+      const el = document.createElement('div');
+      el.className = 'term__line term__help';
+      cmds.forEach((c) => {
+        const name = document.createElement('span');
+        name.textContent = c.cmd;
+        const desc = document.createElement('span');
+        desc.textContent = c.desc;
+        el.append(name, desc);
       });
-      const caret = document.createElement('div');
-      caret.className = 'term__line term__caret';
-      body.appendChild(caret);
+      body.appendChild(el);
+      scrollEnd();
     };
 
-    if (reduceMotion) { staticRender(); return; }
+    const printLinks = () => {
+      (PROFILE.links || []).forEach((l) => push('out', `${l.label}  ${l.url.replace(/^mailto:/i, '')}`));
+    };
 
-    const type = async () => {
-      // 只在终端可见时播放，省电
-      while (true) {
-        body.innerHTML = '';
-        for (const line of PROFILE.terminal) {
-          const el = document.createElement('div');
-          el.className = `term__line ${line.cls || 'out'}`;
-          body.appendChild(el);
+    // 执行一条命令
+    const run = (raw) => {
+      const input = raw.trim();
+      if (!input) return;
+      echo(input);
+      if (history[0] !== input) history.unshift(input);
+      hIndex = -1;
 
-          if (line.prompt) {
-            const p = document.createElement('span');
-            p.className = 'term__prompt';
-            p.textContent = line.prompt;
-            el.appendChild(p);
-          }
+      const [name, ...args] = input.split(/\s+/);
+      const cmd = find(name.toLowerCase());
 
-          const span = document.createElement('span');
-          el.appendChild(span);
-
-          if (line.cls === 'cmd') {
-            el.classList.add('is-typing');
-            for (const ch of line.text) {
-              span.textContent += ch;
-              await sleep(24 + Math.random() * 26);
-            }
-            el.classList.remove('is-typing');
-            await sleep(320);
-          } else {
-            span.textContent = line.text;
-            await sleep(240);
-          }
-        }
-        const caret = document.createElement('div');
-        caret.className = 'term__line term__caret';
-        body.appendChild(caret);
-        await sleep(3000);
+      if (!cmd) {
+        push('err', `command not found: ${name}`);
+        push('out', '输入 help 查看可用指令。');
+        return;
       }
+      if (cmd.cmd === 'clear') { clearLog(); return; }
+      if (cmd.cmd === 'help') {
+        const sub = args[0] ? find(args[0].toLowerCase()) : null;
+        if (sub) push('out', `${sub.cmd}  ${sub.desc}`);
+        else printHelp();
+        return;
+      }
+      if (cmd.cmd === 'contact') printLinks();
+      if (cmd.out) push('out', fill(cmd.out));
+      if (cmd.go && !goTo(cmd.go)) push('err', `无法定位到 ${cmd.go}`);
     };
 
-    type();
+    /* 输入区交互：回车执行、↑↓ 翻历史、Tab 补全、Ctrl+L 清屏 */
+    field.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!history.length) return;
+        hIndex = Math.min(hIndex + 1, history.length - 1);
+        field.value = history[hIndex];
+        field.setSelectionRange(field.value.length, field.value.length);
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (hIndex <= 0) { hIndex = -1; field.value = ''; return; }
+        field.value = history[--hIndex];
+        field.setSelectionRange(field.value.length, field.value.length);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const typed = field.value.trim().toLowerCase();
+        if (!typed) return;
+        const hits = cmds.filter((c) => c.cmd.startsWith(typed));
+        if (hits.length === 1) field.value = `${hits[0].cmd} `;
+        else if (hits.length > 1) push('out', hits.map((c) => c.cmd).join('   '));
+      } else if (e.key === 'Escape') {
+        field.value = '';
+      } else if (e.key.toLowerCase() === 'l' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        clearLog();
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = field.value;
+      field.value = '';
+      run(value);
+    });
+
+    // 点卡片任意位置就能开始输入（正在选中文字时不抢焦点）
+    if (card) {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        if (String(window.getSelection())) return;
+        field.focus();
+      });
+    }
+
+    // 开场白
+    clearLog();
+    (PROFILE.terminalBanner || []).forEach((line, i) => push(i === 0 ? '' : 'out', fill(line)));
   }
 
-  /* ---------- 11. 启动 ---------- */
+  /* ---------- 12. 作品集占位链接 ---------- */
+  // href 还是 "#" 时点击只给个提示；把 href 换成真实地址后即自动变成普通链接
+  function initPortfolioLinks() {
+    $$('[data-portfolio]').forEach((el) => {
+      const tag = $('.tile__tag', el);
+      const original = tag ? tag.textContent : '';
+      let timer;
+
+      el.addEventListener('click', (e) => {
+        const href = (el.getAttribute('href') || '').trim();
+        if (href && href !== '#') return;   // 已配好地址，正常跳转
+        e.preventDefault();
+        if (!tag) return;
+        tag.textContent = '作品集整理中，敬请期待';
+        clearTimeout(timer);
+        timer = setTimeout(() => { tag.textContent = original; }, 1800);
+      });
+    });
+  }
+
+  /* ---------- 13. 启动 ---------- */
   function boot() {
     const y = $('#year');
     if (y) y.textContent = new Date().getFullYear();
@@ -334,6 +454,7 @@ const PROFILE = {
     initSpotlight();
     initTilt();
     initTerminal();
+    initPortfolioLinks();
   }
 
   if (document.readyState === 'loading') {
