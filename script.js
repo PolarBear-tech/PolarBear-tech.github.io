@@ -42,7 +42,8 @@ const PROFILE = {
   //  { label: '邮箱',   url: 'mailto:you@example.com' }]
   links: [
     { label: '邮箱', url: 'mailto:li.jinzhao.x@outlook.com' },
-    { label: 'Github', url: 'https://github.com/PolarBear-tech' }
+    { label: 'Github', url: 'https://github.com/PolarBear-tech' },
+    { label: '画作', url: 'https://cn.club.vmall.com/mhw/consumer/cn/community/mhwnews/userhome/id_1000000000135732246' }
   ]
 };
 
